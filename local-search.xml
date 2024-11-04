@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>局域网下的Git服务器搭建</title>
+    <link href="/2024/10/25/%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84Git%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA/"/>
+    <url>/2024/10/25/%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84Git%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA/</url>
+    
+    <content type="html"><![CDATA[<p>Git是使用最广泛的多人协作和版本管理软件。使用代码托管平台如国外的github和国内的gitee可以轻松实现多人协作和版本管理，但是如果对代码有保密需求，就必须搭建一台服务器作为私有仓库使用，其他设备访问这台服务器获取代码。这里分成两个步骤：一是git仓库的搭建；二是局域网的搭建。</p><h2 id="Git服务器"><a href="#Git服务器" class="headerlink" title="Git服务器"></a>Git服务器</h2><p>在linux系统上搭建git服务器，参考链接<a href="https://www.runoob.com/git/git-server.html">https://www.runoob.com/git/git-server.html</a></p><ul><li><p>安装git</p><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">sudo apt-<span class="hljs-built_in">get</span> install git<br></code></pre></td></tr></table></figure></li><li><p>初始化git仓库<br>在想要创建仓库的目录下输入命令</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git init <span class="hljs-built_in">test</span><br></code></pre></td></tr></table></figure><p><img src="/2024/10/25/%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84Git%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA/1.1.png" alt="图1"></p><p>其中<code>test</code>为项目名称，运行后会在当前路径建立test文件夹。</p></li><li><p>客户端拉取远程仓库</p><p>在客户端电脑上新建本地文件夹，如果是windows系统打开Git Bash</p><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs elixir">git clone hua<span class="hljs-variable">@10</span>.<span class="hljs-number">193.162</span>.<span class="hljs-number">88</span><span class="hljs-symbol">:/home/hua/Desktop/gitrepo/test</span><br></code></pre></td></tr></table></figure><p>其中<code>@</code>符号前为服务器上的用户名，<code>@</code>符号后为服务器ip，<code>:</code>后为git仓库所在路径</p><p><img src="/2024/10/25/%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84Git%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA/2.3.png" alt="图5"></p></li></ul><h2 id="局域网搭建"><a href="#局域网搭建" class="headerlink" title="局域网搭建"></a>局域网搭建</h2><p>关于局域网的搭建，这里给出两种解决方案</p><h3 id="方案一：校园网连接"><a href="#方案一：校园网连接" class="headerlink" title="方案一：校园网连接"></a><strong>方案一：校园网连接</strong></h3><p>使用校园网自动分配的ip，好处是走校园网内网，不消耗流量，只要能连上校园网就可以同步代码。问题是校园网ip不固定，动态分配，随时更新，需手动更改git仓库地址，有些麻烦。</p><h3 id="方案二：交换机和网线物理连接"><a href="#方案二：交换机和网线物理连接" class="headerlink" title="方案二：交换机和网线物理连接"></a><strong>方案二：交换机和网线物理连接</strong></h3><p>使用交换机和网线将服务器和工作机连接起来，缺点是空间受限，需要服务器和所有人的工作机都在同一个房间。也可以使用路由器wifi连接，但是wifi信号范围仍然有限。好处是速度快且可以固定ip。</p><ul><li><p>使用交换机和网线将设备连接起来，分别查看ip和子网掩码，确保两台电脑处于同一子网下(即两台电脑ip地址的子网掩码为1相对应的位相同)</p><p>Windows: <code>ipconfig</code></p><p>Linux: <code>ifconfig</code></p><img src="3.1.png" alt="图7" style="zoom: 80%;" /></li><li><p>也可以手动设置ip和子网掩码，确保设备处于同一子网之下</p></li></ul><p><code>控制面板</code>-&gt;<code>网络和Internet</code>-&gt;<code>网络和共享中心</code>-&gt;<code>以太网属性</code>-&gt;<code>IPv4</code>-&gt;<code>属性</code></p><img src="3.6.png" alt="图9" style="zoom:67%;" /><ul><li><p>windows系统需手动开启局域网防火墙</p><p><code>控制面板</code>-&gt;<code>系统和安全</code>-&gt;<code>Windows Defender 防火墙</code>-&gt;<code>高级设置</code></p><p><img src="/2024/10/25/%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84Git%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA/4.7.png" alt="图11"></p></li></ul><p>设置完成后</p><p><img src="/2024/10/25/%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84Git%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA/3.4.png" alt="图12"></p><ul><li><p>在一台电脑上ping另一台电脑的ip测试连接</p><img src="3.9.jpg" alt="图13" style="zoom: 67%;" /></li></ul>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  
+</search>
