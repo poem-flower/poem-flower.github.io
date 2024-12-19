@@ -19,27 +19,25 @@
   <meta name="author" content="poem-flower">
   <meta name="keywords" content="">
   
-    <meta name="description" content="通常情况下我们是在学校或公司的服务器上搭建深度学习环境，然后在自己的工位或者实验室使用个人电脑连接服务器使用其计算资源。个人电脑和服务器通常使用内网连接。那么当我们想要多地办公，比如当我们回到家里或是出差在外的时候仍能访问到我们服务器时，就会面临两个问题：一是如何访问处于校园网内网之下的服务器，二是如何保证所在地不同的设备上的代码版本同步。 这里介绍pycharm+花生壳+git的解决方案。花生壳">
+    <meta name="description" content="之前使用花生壳搭建了服务器，使得在校园网之外也可以访问到校园网内网里的设备，那么访问校园网内网的其他服务应该也是可以实现的。校内论坛一般是通过校园网搭建的，使用校园网访问不消耗流量，但外网无法直接访问。如果想使用外网访问，需要一台校内服务器做socks代理，原理和科学上网相似，只不过我们的服务器处在“内网”之下。 shadowsocks是被广泛应用的轻量级socks代理工具，配合客户端软件clas">
 <meta property="og:type" content="article">
-<meta property="og:title" content="pycharm+花生壳+git深度学习多地办公解决方案">
-<meta property="og:url" content="http://example.com/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/index.html">
+<meta property="og:title" content="shadowsocks搭建校园网VPN">
+<meta property="og:url" content="http://example.com/2024/12/19/shadowsocks%E6%90%AD%E5%BB%BA%E6%A0%A1%E5%9B%AD%E7%BD%91VPN/index.html">
 <meta property="og:site_name" content="Hua&#39;s Blog">
-<meta property="og:description" content="通常情况下我们是在学校或公司的服务器上搭建深度学习环境，然后在自己的工位或者实验室使用个人电脑连接服务器使用其计算资源。个人电脑和服务器通常使用内网连接。那么当我们想要多地办公，比如当我们回到家里或是出差在外的时候仍能访问到我们服务器时，就会面临两个问题：一是如何访问处于校园网内网之下的服务器，二是如何保证所在地不同的设备上的代码版本同步。 这里介绍pycharm+花生壳+git的解决方案。花生壳">
+<meta property="og:description" content="之前使用花生壳搭建了服务器，使得在校园网之外也可以访问到校园网内网里的设备，那么访问校园网内网的其他服务应该也是可以实现的。校内论坛一般是通过校园网搭建的，使用校园网访问不消耗流量，但外网无法直接访问。如果想使用外网访问，需要一台校内服务器做socks代理，原理和科学上网相似，只不过我们的服务器处在“内网”之下。 shadowsocks是被广泛应用的轻量级socks代理工具，配合客户端软件clas">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/1.png">
-<meta property="og:image" content="http://example.com/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/2.jpg">
-<meta property="og:image" content="http://example.com/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/3.jpg">
-<meta property="og:image" content="http://example.com/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/4.jpg">
-<meta property="og:image" content="http://example.com/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/5.jpg">
-<meta property="article:published_time" content="2024-12-02T02:33:46.000Z">
-<meta property="article:modified_time" content="2024-12-02T11:14:17.295Z">
+<meta property="og:image" content="http://example.com/2024/12/19/shadowsocks%E6%90%AD%E5%BB%BA%E6%A0%A1%E5%9B%AD%E7%BD%91VPN/1.jpg">
+<meta property="og:image" content="http://example.com/2024/12/19/shadowsocks%E6%90%AD%E5%BB%BA%E6%A0%A1%E5%9B%AD%E7%BD%91VPN/2.jpg">
+<meta property="og:image" content="http://example.com/2024/12/19/shadowsocks%E6%90%AD%E5%BB%BA%E6%A0%A1%E5%9B%AD%E7%BD%91VPN/3.png">
+<meta property="article:published_time" content="2024-12-19T07:37:40.000Z">
+<meta property="article:modified_time" content="2024-12-19T08:05:56.799Z">
 <meta property="article:author" content="poem-flower">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/1.png">
+<meta name="twitter:image" content="http://example.com/2024/12/19/shadowsocks%E6%90%AD%E5%BB%BA%E6%A0%A1%E5%9B%AD%E7%BD%91VPN/1.jpg">
   
   
   
-  <title>pycharm+花生壳+git深度学习多地办公解决方案 - Hua&#39;s Blog</title>
+  <title>shadowsocks搭建校园网VPN - Hua&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -205,7 +203,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="pycharm+花生壳+git深度学习多地办公解决方案"></span>
+            <span id="subtitle" data-typed-text="shadowsocks搭建校园网VPN"></span>
           
         </div>
 
@@ -216,8 +214,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-12-02 10:33" pubdate>
-          December 2, 2024 am
+        <time datetime="2024-12-19 15:37" pubdate>
+          December 19, 2024 pm
         </time>
       </span>
     
@@ -228,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k words
+          640 words
         
       </span>
     
@@ -239,7 +237,7 @@
         
         
         
-          11 mins
+          6 mins
         
       </span>
     
@@ -276,65 +274,45 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">pycharm+花生壳+git深度学习多地办公解决方案</h1>
+            <h1 id="seo-header">shadowsocks搭建校园网VPN</h1>
             
             
               <div class="markdown-body">
                 
-                <p>通常情况下我们是在学校或公司的服务器上搭建深度学习环境，然后在自己的工位或者实验室使用个人电脑连接服务器使用其计算资源。个人电脑和服务器通常使用内网连接。那么当我们想要多地办公，比如当我们回到家里或是出差在外的时候仍能访问到我们服务器时，就会面临两个问题：一是如何访问处于校园网内网之下的服务器，二是如何保证所在地不同的设备上的代码版本同步。</p>
-<p>这里介绍pycharm+花生壳+git的解决方案。花生壳主要用来进行内网穿透，git用来确保多设备版本同步。</p>
-<h2 id="pycharm"><a href="#pycharm" class="headerlink" title="pycharm"></a>pycharm</h2><p>pycharm是深度学习领域最常用的编辑器，使用pycharm的ssh功能可以很轻松地实现本地与服务器的同步。这方面网上资料很多，这里就不赘述了。</p>
-<h2 id="花生壳"><a href="#花生壳" class="headerlink" title="花生壳"></a>花生壳</h2><p>pycharm的ssh功能虽然可以解决本地与服务器端同步的问题，但是ssh连接需要服务器的ip。当我们在校园网内的时候，直接运行命令</p>
- <figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">ifconfig</span><br></code></pre></td></tr></table></figure>
-
-<p>即可查看服务器的内网ip。使用内网ip可以直接ssh连接服务器。但是这里有两个问题，一是校园网ip动态获取、随时更新使得我们需要频繁手动更新ssh配置，二是当离开校园网环境便无法再连接服务器。</p>
-<p>因此需要使用内网穿透技术对服务器ssh端口进行转发。如自行配置内网穿透需要一台拥有固定公网ip的服务器，可以租用各大云服务提供商如阿里云百度云的服务器。这里推荐一步到位直接使用国内贝锐花生壳的内网穿透服务，提供免费域名，访问域名即可访问到处于内网的服务器，方便快捷。（注：这里需要服务器自身是可以访问到外网的）</p>
-<p> 花生壳官网安装教程<a target="_blank" rel="noopener" href="https://service.oray.com/question/11630.html">https://service.oray.com/question/11630.html</a></p>
-<p>官网下载花生壳客户端</p>
-<img src="1.png" srcset="/img/loading.gif" lazyload alt="image1" style="zoom: 50%;" />
-
-<p>安装客户端，在安装文件所在目录输入</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">dpkg -<span class="hljs-selector-tag">i</span> 安装包名称<span class="hljs-selector-class">.deb</span><br></code></pre></td></tr></table></figure>
-
-<p><img src="/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/2.jpg" srcset="/img/loading.gif" lazyload alt="image2"></p>
-<p>浏览器打开花生壳管理页面，登录进入设备列表添加设备</p>
-<p><img src="/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/3.jpg" srcset="/img/loading.gif" lazyload alt="image3"></p>
-<p>点击设备序号登陆设备之后点击内网穿透添加映射</p>
-<p><img src="/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/4.jpg" srcset="/img/loading.gif" lazyload alt="image4"></p>
-<p>设置映射参数，其中内网主机ip设为0.0.0.0，端口设为22</p>
-<p><img src="/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/5.jpg" srcset="/img/loading.gif" lazyload alt="image5"></p>
-<p>花生壳内网穿透配置完成，使用ssh user@域名:端口名 即可登录，其中端口名为花生壳服务端口。</p>
-<h2 id="git"><a href="#git" class="headerlink" title="git"></a>git</h2><p>使用花生壳可以随时随地连接服务器，但是无法保证多台设备之间数据同步。git作为分布式多人协作版本管理软件可以很好的解决这个问题，以下是使用git进行多地办公时的一些要点</p>
+                <p>之前使用花生壳搭建了服务器，使得在校园网之外也可以访问到校园网内网里的设备，那么访问校园网内网的其他服务应该也是可以实现的。校内论坛一般是通过校园网搭建的，使用校园网访问不消耗流量，但外网无法直接访问。如果想使用外网访问，需要一台校内服务器做socks代理，原理和科学上网相似，只不过我们的服务器处在“内网”之下。</p>
+<p>shadowsocks是被广泛应用的轻量级socks代理工具，配合客户端软件clash和内网穿透软件花生壳可以轻松实现校园网VPN。大致流程为先在连接校园网的服务器上运行shadowsocks服务，配置好端口和密码，将shadowsocks服务端口通过花生壳映射到外网，最后在外网使用clash客户端连接。</p>
+<p>注意，由于这种方式仍需要通过外网访问校园网，因此并不像真正在校园网内一样不消耗流量。如果需要获取内网PT资源，仍然建议在校园网之下下载。</p>
 <ul>
-<li><p>远程仓库的设置</p>
-<p>可以使用代码托管平台如github和gitee作为远程仓库，也可以自己在本地建立仓库。注意如果仓库在服务器本地，其他设备需设置远程服务器地址</p>
-<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-string">git</span> <span class="hljs-string">remote</span> <span class="hljs-built_in">set-url</span> <span class="hljs-string">origin</span> <span class="hljs-string">ssh</span>://<span class="hljs-string">user</span>@域名:端口/<span class="hljs-string">git</span>/<span class="hljs-string">repo</span>/<span class="hljs-string">test</span>/.<span class="hljs-string">git</span><br></code></pre></td></tr></table></figure>
+<li><p>在服务器上安装shadowsocks</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> apt install shadowsocks-libev<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>编辑shadowsocks配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> nano /etc/shadowsocks-libev/config.json<br></code></pre></td></tr></table></figure>
 
-<p>其中需要指明仓库所在ip(或者域名)和所在路径</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;server&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;127.0.0.1&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;server_port&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">8388</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;local_port&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">1080</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;password&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;xxxxxx&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;timeout&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-number">60</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;method&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;chacha20-ietf-poly1305&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 </li>
-<li><p>git和pycharm的冲突</p>
-<p>由于pycharm会自动上传本地改动到服务器端，因此当本地或者服务器端推送新版本到远程仓库而另一方想要拉取的时候会就出现冲突。这时可以先让其中一方将改动push到远程服务器，然后另一方将当前工作区回退到上一个版本</p>
-<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs maxima">git <span class="hljs-built_in">reset</span> --hard <span class="hljs-built_in">origin</span>/master<br></code></pre></td></tr></table></figure>
+<li><p>启动shadowsocks服务</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">sudo</span> systemctl start shadowsocks-libev-server<span class="hljs-variable">@config</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>查看shadowsocks服务运行情况</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lua">sudo systemctl <span class="hljs-built_in">status</span> shadowsocks-libev-server@<span class="hljs-built_in">config</span><br></code></pre></td></tr></table></figure>
 
-<p>然后再拉取即可。</p>
+<p>示例输出：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">● shadowsocks-libev-<span class="hljs-keyword">server</span>@config.service - Shadowsocks-Libev Custom <span class="hljs-keyword">Server</span> Service <span class="hljs-keyword">for</span> config<br>   Loaded: loaded (/lib/systemd/<span class="hljs-keyword">system</span>/shadowsocks-libev-<span class="hljs-keyword">server</span>@.service; disabled; vendor preset: enabled)<br>   Active: active (running) since Thu <span class="hljs-number">2024</span><span class="hljs-number">-12</span><span class="hljs-number">-19</span> <span class="hljs-number">10</span>:<span class="hljs-number">56</span>:<span class="hljs-number">25</span> CST; <span class="hljs-number">5</span>s ago<br>     Docs: man:ss-<span class="hljs-keyword">server</span>(<span class="hljs-number">1</span>)<br> Main PID: <span class="hljs-number">36482</span> (ss-<span class="hljs-keyword">server</span>)<br>    Tasks: <span class="hljs-number">1</span> (<span class="hljs-keyword">limit</span>: <span class="hljs-number">19660</span>)<br>   CGroup: /<span class="hljs-keyword">system</span>.<span class="hljs-keyword">slice</span>/<span class="hljs-keyword">system</span>-shadowsocks\x2dlibev\x2dserver.<span class="hljs-keyword">slice</span>/shadowsocks-libev-<span class="hljs-keyword">server</span>@config.service<br>           └─<span class="hljs-number">36482</span> /usr/bin/ss-<span class="hljs-keyword">server</span> -c /etc/shadowsocks-libev/config.json<br><br><span class="hljs-number">12</span>月 <span class="hljs-number">19</span> <span class="hljs-number">10</span>:<span class="hljs-number">56</span>:<span class="hljs-number">25</span> xidian<span class="hljs-number">-4</span> systemd[<span class="hljs-number">1</span>]: Started Shadowsocks-Libev Custom <span class="hljs-keyword">Server</span> Service <span class="hljs-keyword">for</span> config.<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>git add已追踪的文件。</p>
-<p>项目根目录下不仅存放有代码，还可能存放有数据等我们不希望通过git同步的文件。如果使用<code>git add .</code>则会将工作区所有文件的改动提交到暂存区。如果只想添加已经tracked的文件，则使用命令</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">git <span class="hljs-built_in">add</span> -u<br></code></pre></td></tr></table></figure>
-
-<p>（训练数据等文件建议使用移动硬盘等设备手动传输）</p>
+<li><p>花生壳端口转发</p>
+<p>设置内网端口为shadowsocks服务端口8388</p>
+<p><img src="/2024/12/19/shadowsocks%E6%90%AD%E5%BB%BA%E6%A0%A1%E5%9B%AD%E7%BD%91VPN/1.jpg" srcset="/img/loading.gif" lazyload alt="1"></p>
 </li>
-<li><p>git使用基本流程</p>
-<ul>
-<li>创建仓库<code>git int</code>或<code>git clone</code></li>
-<li>每次写代码前从远程服务器拉取最新版本<code>git pull</code></li>
-<li>添加文件和改动到暂存区<code>git add</code></li>
-<li>提交改动<code>git commit</code></li>
-<li>将改动推送到远程仓库<code>git push</code></li>
-</ul>
+<li><p>在客户端使用clash连接shadowsocks服务器</p>
+<p>写配置文件config_XdVPN.yaml</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs dts"><span class="hljs-symbol">proxies:</span><br>  - name: <span class="hljs-string">&quot;Shadowsocks-Server&quot;</span><br><span class="hljs-symbol">    type:</span> ss<br><span class="hljs-symbol">    server:</span> 花生壳内网穿透域名<br><span class="hljs-symbol">    port:</span> 端口<br><span class="hljs-symbol">    password:</span> <span class="hljs-string">&quot;xxxxxx&quot;</span><br><span class="hljs-symbol">    cipher:</span> <span class="hljs-string">&quot;chacha20-ietf-poly1305&quot;</span><br><span class="hljs-symbol">    udp:</span> true<br><span class="hljs-symbol">    tls:</span> false<br></code></pre></td></tr></table></figure>
 </li>
-<li><p>服务器端和本地同步</p>
-<p>由于网络波动等原因，pycharm的自动上传功能并不稳定可靠，常常出现本地和服务器代码不一致的情况。在写代码的过程中可以经常使用pycharm中<code>工具</code>-&gt;<code>部署</code>-&gt;<code>与服务器端版本比较</code>选项来确保代码一致，同时也可以使用git来保证版本同步。这里推荐使用git来完成 。推荐每天写完代码或完成重要的功能都进行一次push和pull，以保证代码一致。</p>
+<li><p>在clash中导入配置文件并在profiles中选中，选择global模式中的Shadowsocks-Server（配置文件中的名字），开启系统代理，打开浏览器系统代理，即可网页浏览睿思。注意此模式下校内服务器接管所有流量，如果校内服务器无法科学上网则客户端也无法科学上网。</p>
+<p><img src="/2024/12/19/shadowsocks%E6%90%AD%E5%BB%BA%E6%A0%A1%E5%9B%AD%E7%BD%91VPN/2.jpg" srcset="/img/loading.gif" lazyload alt="2"></p>
+<p><img src="/2024/12/19/shadowsocks%E6%90%AD%E5%BB%BA%E6%A0%A1%E5%9B%AD%E7%BD%91VPN/3.png" srcset="/img/loading.gif" lazyload alt="3"></p>
+</li>
+<li><p>如果想停止代理服务则切换profile，软件会自动切换回rule模式。</p>
 </li>
 </ul>
 
@@ -354,8 +332,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>pycharm+花生壳+git深度学习多地办公解决方案</div>
-      <div>http://example.com/2024/12/02/pycharm-花生壳-git深度学习多地办公解决方案/</div>
+      <div>shadowsocks搭建校园网VPN</div>
+      <div>http://example.com/2024/12/19/shadowsocks搭建校园网VPN/</div>
     </div>
     <div class="license-meta">
       
@@ -367,7 +345,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Posted on</div>
-          <div>December 2, 2024</div>
+          <div>December 19, 2024</div>
         </div>
       
       
@@ -399,18 +377,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/12/19/shadowsocks%E6%90%AD%E5%BB%BA%E6%A0%A1%E5%9B%AD%E7%BD%91VPN/" title="shadowsocks搭建校园网VPN">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">shadowsocks搭建校园网VPN</span>
-                        <span class="visible-mobile">Previous</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/10/25/%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8B%E7%9A%84Git%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA/" title="局域网下的Git服务器搭建">
-                        <span class="hidden-mobile">局域网下的Git服务器搭建</span>
+                      <a href="/2024/12/02/pycharm-%E8%8A%B1%E7%94%9F%E5%A3%B3-git%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%A4%9A%E5%9C%B0%E5%8A%9E%E5%85%AC%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" title="pycharm+花生壳+git深度学习多地办公解决方案">
+                        <span class="hidden-mobile">pycharm+花生壳+git深度学习多地办公解决方案</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
